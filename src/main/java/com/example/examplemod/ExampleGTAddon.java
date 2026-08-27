@@ -3,8 +3,8 @@ package com.example.examplemod;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
-import net.minecraft.data.recipes.RecipeOutput;
 
+import net.minecraft.data.recipes.RecipeOutput;
 
 @SuppressWarnings("unused")
 @GTAddon(value = ExampleMod.MOD_ID)
@@ -19,8 +19,7 @@ public class ExampleGTAddon implements IGTAddon {
     public void gtInitComplete() {}
 
     @Override
-    public void addRecipes(RecipeOutput provider) {
-    }
+    public void addRecipes(RecipeOutput provider) {}
 
     // If you have custom ingredient types, uncomment this & change to match your capability.
     // KubeJS WILL REMOVE YOUR RECIPES IF THESE ARE NOT REGISTERED.
