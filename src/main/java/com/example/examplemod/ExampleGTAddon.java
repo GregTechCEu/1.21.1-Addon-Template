@@ -3,13 +3,11 @@ package com.example.examplemod;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
+import net.minecraft.data.recipes.RecipeOutput;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-
-import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
-@GTAddon
+@GTAddon(value = ExampleMod.MOD_ID)
 public class ExampleGTAddon implements IGTAddon {
 
     @Override
@@ -18,26 +16,10 @@ public class ExampleGTAddon implements IGTAddon {
     }
 
     @Override
-    public void initializeAddon() {}
+    public void gtInitComplete() {}
 
     @Override
-    public String addonModId() {
-        return ExampleMod.MOD_ID;
-    }
-
-    @Override
-    public void registerTagPrefixes() {
-        // CustomTagPrefixes.init();
-    }
-
-    @Override
-    public void addRecipes(Consumer<FinishedRecipe> provider) {
-        // CustomRecipes.init(provider);
-    }
-
-    @Override
-    public void registerElements() {
-        // CustomElements.init();
+    public void addRecipes(RecipeOutput provider) {
     }
 
     // If you have custom ingredient types, uncomment this & change to match your capability.
