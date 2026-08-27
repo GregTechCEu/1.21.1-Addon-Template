@@ -37,6 +37,16 @@ public class ExampleMod {
         // CustomSounds.init();
     }
 
+    /**
+     * Create a ResourceLocation in the format "modid:path"
+     *
+     * @param path path
+     * @return ResourceLocation with the namespace of your mod
+     */
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+
     @SubscribeEvent
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
@@ -50,21 +60,13 @@ public class ExampleMod {
         LOGGER.info("Hey, we're on Minecraft version {}!", Minecraft.getInstance().getLaunchedVersion());
     }
 
-    /**
-     * Create a ResourceLocation in the format "modid:path"
-     *
-     * @param path
-     * @return ResourceLocation with the namespace of your mod
-     */
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-    }
 
     /**
      * (Optional) Used to modify pre-existing materials from GregTech
      * 
      * @param event
      */
+    @SubscribeEvent
     private void modifyMaterials(PostMaterialEvent event) {
         // CustomMaterials.modify();
     }
