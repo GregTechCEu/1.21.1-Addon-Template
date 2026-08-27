@@ -1,6 +1,6 @@
-# Dependency info for non-mod dependencies
 
 [versions]
+# The version numbers for your dependencies
 minecraft = "1.21.1"
 neoForge = "21.1.234"
 parchment = "2024.11.17" # https://parchmentmc.org/docs/getting-started
@@ -19,6 +19,7 @@ emi = "1.1.24+1.21.1"
 jade = "15.10.0+neoforge"
 
 [libraries]
+# The package name and version id for each each dependency
 minecraft               = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 neoForge                = { module = "net.neoforged:neoforge", version.ref = "neoForge" }
 jetbrains-annotations   = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
