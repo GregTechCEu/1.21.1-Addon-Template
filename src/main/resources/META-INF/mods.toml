@@ -23,21 +23,29 @@ Example Description
 ...ain is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain,... (Lorem Ipsum translated to english.)
 '''
 
-    [[dependencies.${mod_id}]]
-        modId = "forge"
-        mandatory = true
-        versionRange = "[${forge_version},)"
-        ordering = "NONE"
-        side = "BOTH"
-    [[dependencies.${mod_id}]]
-        modId = "minecraft"
-        mandatory = true
-        versionRange = "[${minecraft_version},)"
-        ordering = "NONE"
-        side = "BOTH"
-    [[dependencies.${mod_id}]]
-        modId = "gtceu"
-        mandatory = true
-        versionRange = "[${gtceu_version},)"
-        ordering = "AFTER"
-        side = "BOTH"
+enumExtensions = "META-INF/enum_extensions.json"
+
+[[mixins]]
+config = "${mod_id}.mixins.json"
+
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
+
+[[dependencies.${mod_id}]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "[${neo_version},)"
+    ordering = "NONE"
+    side = "BOTH"
+[[dependencies.${mod_id}]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "${minecraft_version}"
+    ordering = "NONE"
+    side = "BOTH"
+[[dependencies.${mod_id}]]
+    modId = "gtceu"
+    mandatory = true
+    versionRange = "[${gtceu_version},)"
+    ordering = "AFTER"
+    side = "BOTH"

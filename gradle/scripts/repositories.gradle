@@ -1,0 +1,44 @@
+// The repositories declaration denotes where to find the dependencies your addon uses.
+// Many mod devs provide their own maven.
+// Alternatively, both CurseForge and Modrinth allow for mods uploaded to their platforms to added as dependencies
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'GTCEu Maven'
+        url = 'https://maven.gtceu.com'
+        content {
+            includeGroup 'com.gregtechceu.gtceu'
+            includeGroup 'brachy.modularui'
+        }
+
+    }
+    maven {
+        name 'FirstDarkDev'
+        url "https://maven.firstdark.dev/snapshots/"
+    }
+    exclusiveContent { // tterrag - registrate
+        forRepository { maven { url = "https://mvn.devos.one/snapshots/" } }
+        filter { includeGroup("com.tterrag.registrate") }
+    }
+    maven {
+        // Patchouli, JEI
+        name = "BlameJared"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+    maven {
+        // Curse Forge File
+        url "https://cursemaven.com/"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        // EMI
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+}

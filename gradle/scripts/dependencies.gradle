@@ -1,0 +1,25 @@
+// The dependencies declaration declares all the mods and other dependencies that your project uses.
+dependencies {
+    compileOnly(libs.jetbrains.annotations)
+
+    // GregTech and dependencies
+    implementation(libs.gtceu) { transitive = false }
+    implementation(libs.mui)
+    implementation(libs.registrate)
+    implementation(libs.configuration)
+
+    // Registrate
+    api(libs.registrate)
+    // Configuration
+    api(libs.configuration)
+
+
+    // EMI, Jade
+    implementation(libs.emi)
+    runtimeOnly("curse.maven:jade-324717:5390389")
+
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
