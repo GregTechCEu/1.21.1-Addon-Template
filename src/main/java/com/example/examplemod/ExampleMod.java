@@ -60,7 +60,6 @@ public class ExampleMod {
         LOGGER.info("Hey, we're on Minecraft version {}!", Minecraft.getInstance().getLaunchedVersion());
     }
 
-
     /**
      * (Optional) Used to modify pre-existing materials from GregTech
      * 
