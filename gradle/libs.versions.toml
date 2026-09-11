@@ -1,0 +1,38 @@
+
+[versions]
+# The version numbers for your dependencies
+minecraft = "1.21.1"
+neoForge = "21.1.234"
+parchment = "2024.11.17" # https://parchmentmc.org/docs/getting-started
+spotless = "8.1.0"
+modDevGradle = "2.0.141"
+lombok = "8.14"
+jetbrains-annotations = "26.0.1"
+
+gtceu = "8.0.0-SNAPSHOT"
+mui = "3.3.1-SNAPSHOT"
+registrate = "MC1.21-1.3.0+67"
+configuration = "3.1.1-neoforge"
+emi = "1.1.24+1.21.1"
+
+## modrinth maven ##
+jade = "15.10.0+neoforge"
+
+[libraries]
+# The package name and version id for each each dependency
+minecraft               = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+neoForge                = { module = "net.neoforged:neoforge", version.ref = "neoForge" }
+jetbrains-annotations   = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+
+gtceu               = { module = "com.gregtechceu.gtceu:gtceu-1.21.1", version.ref = "gtceu" }
+registrate          = { module = "com.tterrag.registrate:Registrate", version.ref = "registrate" }
+configuration       = { module = "dev.toma.configuration:configuration-1.21.1", version.ref = "configuration" }
+
+mui                 = { module = "brachy.modularui:modularui-mc1.21.1", version.ref = "mui" }
+emi                 = { module = "dev.emi:emi-neoforge", version.ref = "emi" }
+jade                = { module = "maven.modrinth:jade", version.ref = "jade" }
+
+[plugins]
+modDevGradle            = { id = "net.neoforged.moddev", version.ref = "modDevGradle" }
+spotless                = { id = "com.diffplug.spotless", version.ref = "spotless" }
+lombok                  = { id = "io.freefair.lombok", version.ref = "lombok" }

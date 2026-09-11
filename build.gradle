@@ -11,10 +11,14 @@ buildscript {
 plugins {
     id "idea"
     id "eclipse"
-    id "maven-publish"
-    id 'net.neoforged.moddev.legacyforge' version '2.0.91'
-    id 'com.diffplug.spotless' version '7.0.2'
+    alias libs.plugins.modDevGradle
+    alias libs.plugins.spotless
+    alias libs.plugins.lombok
 }
+
+apply from: "$rootDir/gradle/scripts/spotless.gradle"
+apply from: "$rootDir/gradle/scripts/repositories.gradle"
+apply from: "$rootDir/gradle/scripts/dependencies.gradle"
 
 sourceSets {
     main.resources {
@@ -22,67 +26,64 @@ sourceSets {
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        name = 'GTCEu Maven'
-        url = 'https://maven.gtceu.com'
-        content {
-            includeGroup 'com.gregtechceu.gtceu'
-        }
-    }
-    maven {
-        name 'FirstDarkDev'
-        url "https://maven.firstdark.dev/snapshots/"
-    }
-    maven { // Registrate
-        url = "https://maven.tterrag.com/"
-        content {
-            // need to be specific here due to version overlaps
-            includeGroup("com.tterrag.registrate")
-        }
-    }
-    maven {
-        // Patchouli, JEI
-        name = "BlameJared"
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        url = "https://maven.theillusivec4.top/"
-    }
-    maven {
-        // Curse Forge File
-        url "https://cursemaven.com/"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        // EMI
-		name = "TerraformersMC"
-		url = "https://maven.terraformersmc.com/"
-	}
-    maven {
-        url = "https://thedarkcolour.github.io/KotlinForForge/"
-    }
-
-}
-
 version = mod_version
 group = maven_group
-base { archivesName = archives_base_name }
-java { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17 }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-legacyForge {
-    version = project.minecraft_version + '-' + project.forge_version
+neoForge {
+    // Specify NeoForge version
+    version = libs.versions.neoForge.get()
 
     parchment {
-        mappingsVersion = project.mapping_version
-        minecraftVersion = project.minecraft_version
+        minecraftVersion = libs.versions.minecraft.get()
+        mappingsVersion = libs.versions.parchment.get()
     }
 
+
+    mods {
+        // define mod <-> source bindings
+        // these are used to tell the game which sources are for which mod
+        // multi mod projects should define one per mod
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
     runs {
+        client {
+            client()
+            sourceSet = sourceSets.main
+            ideName = "Client"
+
+            systemProperty('neoforge.enabledGameTestNamespaces', project.mod_id)
+        }
+
+        server {
+            server()
+            sourceSet = sourceSets.main
+            ideName = "Server"
+
+            gameDirectory.set(file('run/server'))
+            programArguments.addAll('--nogui', '--world', 'world-extra')
+            systemProperty('neoforge.enabledGameTestNamespaces', project.mod_id)
+        }
+
+        data {
+            data()
+            sourceSet = sourceSets.main
+            ideName = "Data Generation"
+
+            gameDirectory.set(file('run/data'))
+            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+            programArguments.addAll('--mod', project.mod_id)
+            programArguments.addAll('--all')
+            programArguments.addAll('--output', file('src/generated/resources/').getAbsolutePath())
+            programArguments.addAll('--existing', file('src/main/resources/').getAbsolutePath())
+            programArguments.addAll('--existing-mod', 'gtceu')
+        }
+
         configureEach {
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
@@ -96,101 +97,59 @@ legacyForge {
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             logLevel = org.slf4j.event.Level.DEBUG
         }
-        client {
-            client()
-            sourceSet = sourceSets.main
-            programArguments.addAll('--refresh-dependencies')
-            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
-        }
-        server {
-            server()
-            sourceSet = sourceSets.main
-            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
-            programArguments.addAll('--nogui', '--world', 'world-extra')
-        }
-        data {
-            data()
-            sourceSet = sourceSets.main
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            programArguments.addAll('--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath())
-            programArguments.addAll('--existing-mod', 'gtceu')
-        }
-    }
-
-    mods {
-        // define mod <-> source bindings
-        // these are used to tell the game which sources are for which mod
-        // mostly optional in a single mod project
-        // but multi mod projects should define one per mod
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
     }
 }
-jar {
-    manifest.attributes([
-            "MixinConfigs": "examplemod.mixins.json"
-    ])
-}
 
-apply from: "$rootDir/gradle/scripts/spotless.gradle"
+String suffix = System.getenv("VERSION_SUFFIX")
+String version_toml = "$version" + (suffix ? "+$suffix" : "")
 
-dependencies {
-    compileOnly("org.jetbrains:annotations:26.0.1")
-
-    // Mixin
-    annotationProcessor('org.spongepowered:mixin:0.8.5:processor')
-
-    // JEI, EMI, Jade
-    modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-    modRuntimeOnly("dev.emi:emi-forge:${emi_version}+${minecraft_version}")
-    modRuntimeOnly("curse.maven:jade-324717:5390389")
-
-    // GregTech and dependencies
-    modImplementation("com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gtceu_version}:slim") { transitive = false }
-    modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") { transitive = false }
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
-    modImplementation("dev.toma.configuration:configuration-forge-${minecraft_version}:${configuration_version}")
-
-    // lombok
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-}
-
-// See com.example.examplemod.mixin.DummyMixin for information about mixins
-mixin {
-    add sourceSets.main, "mixins.${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-}
-
-tasks.named('processResources', ProcessResources).configure {
-    var properties = [
-            "mod_license": mod_license,
-            "mod_id": mod_id,
-            "version": version,
-            "mod_name": mod_name,
-            "mod_url": mod_url,
-            "mod_author": mod_author,
-            "forge_version": forge_version.split("\\.")[0], // only specify major version of forge
-            "minecraft_version": minecraft_version,
-            "gtceu_version": gtceu_version,
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var neoVersion = libs.versions.neoForge.get()
+    neoVersion = neoVersion.substring(0, neoVersion.lastIndexOf('.'))
+    var replaceProperties = [
+            minecraft_version      : version_toml,
+            neo_version            : neoVersion,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
     ]
-    inputs.properties(properties)
-
-    filesMatching("META-INF/mods.toml") {
-        expand properties + [project: project]
-    }
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
 }
 
-tasks.named('jar', Jar).configure { finalizedBy 'reobfJar' }
+// Include the output of "generateModMetadata" as an input directory for the build
+// this works with both building through Gradle and the IDE.
+sourceSets.main.resources.srcDir generateModMetadata
+// To avoid having to run "generateModMetadata" manually, make it run on every project reload
+neoForge.ideSyncTask generateModMetadata
+
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
     // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
     // If Javadoc is generated, this must be specified in that task too.
     options.encoding = "UTF-8"
-    options.release.set(17)
+    options.release.set(21)
     options.compilerArgs << "-Aquiet=true" // Suppress mixin notes
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+lombok {
+    version = "1.18.38"
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }
